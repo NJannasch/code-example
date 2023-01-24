@@ -36,6 +36,7 @@ EOF
     # monitoring = true
     associate_public_ip_address = true
   monitoring = true
+  ebs_optimized = true
 }
 
 
@@ -226,6 +227,30 @@ resource "aws_s3_bucket" "flowbucket" {
     })
 }
 
+
+resource "aws_s3_bucket" "flowbucket_log_bucket" {
+  bucket = "flowbucket-log-bucket"
+}
+
+resource "aws_s3_bucket_logging" "flowbucket" {
+  bucket = aws_s3_bucket.flowbucket.id
+
+  target_bucket = aws_s3_bucket.flowbucket_log_bucket.id
+  target_prefix = "log/"
+}
+
+
+
+resource "aws_s3_bucket_server_side_encryption_configuration" "flowbucket" {
+  bucket = aws_s3_bucket.flowbucket.bucket
+
+  rule {
+    apply_server_side_encryption_by_default {
+      sse_algorithm     = "AES256"
+    }
+  }
+}
+
 resource "aws_s3_bucket_versioning" "flowbucket" {
   bucket = aws_s3_bucket.flowbucket.id
 
@@ -239,6 +264,16 @@ resource "aws_s3_bucket_public_access_block" "flowbucket" {
 
   block_public_acls   = true
   block_public_policy = true
+  ignore_public_acls = true
+  restrict_public_buckets = true
+}
+
+resource "aws_kms_key" "dummy" {
+  description             = "KMS key 1"
+  deletion_window_in_days = 10
+  enable_key_rotation = true
+}
+lic_policy = true
   ignore_public_acls = true
   restrict_public_buckets = true
 }
