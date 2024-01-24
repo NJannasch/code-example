@@ -23,8 +23,10 @@ jobs:
         env:
           WORKDIR: ${{ github.event.inputs.WORKDIR }}
         run: |
-
+          echo ${{ github.event.inputs.WORKDIR }}
+          echo "_____"
           echo ${{ github.event.head_commit.message }}
+          echo "_____"
           # Build a docker container and
           # push it to ECR so that it can
           # be deployed to ECS.
